@@ -1,6 +1,8 @@
-## GitHub Repository Description (Short)
+## What is this?
 
 A web application built with Laravel to connect small food vendors with surplus food to individuals in need, aiming to reduce food waste and support the local community.
+
+This app is made as final project for ASOSEK (Aspek Sosial Perangkat Lunak) class
 
 ---
 
