@@ -60,12 +60,15 @@
                                             </span>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
-                                            {{ $item->pickup_start_time->format('M d, H:i') }} - {{ $item->pickup_end_time->format('H:i') }}
+                                            {{ \Carbon\Carbon::parse($item->pickup_start_time)->format('M d, H:i') }} - {{ \Carbon\Carbon::parse($item->pickup_end_time)->format('H:i') }}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
-                                            {{ $item->claimedByRecipient->name ?? 'N/A' }}
                                             @if($item->claimedByRecipient)
-                                                ({{ $item->claimedByRecipient->email }})
+                                                <a href="{{ route('vendor.recipient.profile', $item->claimedByRecipient) }}" class="text-indigo-600 hover:underline">
+                                                    {{ $item->claimedByRecipient->name }}
+                                                </a>
+                                            @else
+                                                N/A
                                             @endif
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
@@ -77,30 +80,12 @@
                                                 <button type="submit" class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-200">Delete</button>
                                             </form>
 
-                                            @if($item->status === 'available' || $item->status === 'claimed')
+                                            @if($item->status === 'claimed')
                                             <form action="{{ route('vendor.food-items.updateStatus', $item->id) }}" method="POST" class="inline-block ml-2">
                                                 @csrf
                                                 @method('PATCH')
                                                 <input type="hidden" name="status" value="completed">
                                                 <button type="submit" class="text-green-600 hover:text-green-900" title="Mark as Completed">Complete</button>
-                                            </form>
-                                            @endif
-
-                                            @if($item->status === 'available')
-                                            <form action="{{ route('vendor.food-items.updateStatus', $item->id) }}" method="POST" class="inline-block ml-2">
-                                                @csrf
-                                                @method('PATCH')
-                                                <input type="hidden" name="status" value="unavailable">
-                                                <button type="submit" class="text-gray-500 hover:text-gray-700" title="Mark as Unavailable">Unavailable</button>
-                                            </form>
-                                            @endif
-
-                                            @if($item->status === 'unavailable' || $item->status === 'expired')
-                                            <form action="{{ route('vendor.food-items.updateStatus', $item->id) }}" method="POST" class="inline-block ml-2">
-                                                @csrf
-                                                @method('PATCH')
-                                                <input type="hidden" name="status" value="available">
-                                                <button type="submit" class="text-blue-500 hover:text-blue-700" title="Mark as Available Again">Make Available</button>
                                             </form>
                                             @endif
                                         </td>

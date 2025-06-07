@@ -12,9 +12,34 @@
 
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
+                    {{-- The main 'dashboard' route will redirect to the correct role-specific dashboard --}}
+                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard', 'vendor.dashboard', 'recipient.dashboard', 'admin.dashboard')">
                         {{ __('Dashboard') }}
                     </x-nav-link>
+
+                    {{-- Vendor Links --}}
+                    @if(Auth::user()->role === 'vendor')
+                        <x-nav-link :href="route('vendor.food-items.create')" :active="request()->routeIs('vendor.food-items.create')">
+                            {{ __('List New Item') }}
+                        </x-nav-link>
+                    @endif
+
+                     {{-- Recipient Links --}}
+                    @if(Auth::user()->role === 'recipient')
+                        <x-nav-link :href="route('recipient.my-claims')" :active="request()->routeIs('recipient.my-claims')">
+                            {{ __('My Claims') }}
+                        </x-nav-link>
+                    @endif
+
+                    {{-- Admin Links --}}
+                    @can('access-admin')
+                        <x-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.index', 'admin.users.edit')">
+                            {{ __('Manage Users') }}
+                        </x-nav-link>
+                        <x-nav-link :href="route('admin.food-items.index')" :active="request()->routeIs('admin.food-items.index')">
+                            {{ __('Manage Food Items') }}
+                        </x-nav-link>
+                    @endcan
                 </div>
             </div>
 
@@ -67,9 +92,33 @@
     <!-- Responsive Navigation Menu -->
     <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
         <div class="pt-2 pb-3 space-y-1">
-            <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
+             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard', 'vendor.dashboard', 'recipient.dashboard', 'admin.dashboard')">
                 {{ __('Dashboard') }}
             </x-responsive-nav-link>
+
+            {{-- Vendor Links --}}
+            @if(Auth::user()->role === 'vendor')
+                <x-responsive-nav-link :href="route('vendor.food-items.create')" :active="request()->routeIs('vendor.food-items.create')">
+                    {{ __('List New Item') }}
+                </x-responsive-nav-link>
+            @endif
+
+            {{-- Recipient Links --}}
+            @if(Auth::user()->role === 'recipient')
+                <x-responsive-nav-link :href="route('recipient.my-claims')" :active="request()->routeIs('recipient.my-claims')">
+                    {{ __('My Claims') }}
+                </x-responsive-nav-link>
+            @endif
+
+            {{-- Admin Links --}}
+            @can('access-admin')
+                <x-responsive-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.index', 'admin.users.edit')">
+                    {{ __('Manage Users') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('admin.food-items.index')" :active="request()->routeIs('admin.food-items.index')">
+                    {{ __('Manage Food Items') }}
+                </x-responsive-nav-link>
+            @endcan
         </div>
 
         <!-- Responsive Settings Options -->

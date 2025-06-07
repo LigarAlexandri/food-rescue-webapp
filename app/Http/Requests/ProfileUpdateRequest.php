@@ -15,9 +15,22 @@ class ProfileUpdateRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
+        $rules = [
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', Rule::unique(User::class)->ignore($this->user()->id)],
         ];
+
+        // Add fields for vendors
+        if ($this->user()->role === 'vendor') {
+            $rules['shop_name'] = ['nullable', 'string', 'max:255'];
+            $rules['address'] = ['nullable', 'string'];
+        }
+
+        // Add WhatsApp number for both vendors and recipients
+        if (in_array($this->user()->role, ['vendor', 'recipient'])) {
+            $rules['whatsapp_number'] = ['nullable', 'string', 'max:20'];
+        }
+
+        return $rules;
     }
 }

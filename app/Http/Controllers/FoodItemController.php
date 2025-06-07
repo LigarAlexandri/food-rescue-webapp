@@ -6,6 +6,7 @@ use App\Models\FoodItem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage; // If handling image uploads
+use Carbon\Carbon; // Make sure to import Carbon
 
 class FoodItemController extends Controller
 {
@@ -197,17 +198,24 @@ class FoodItemController extends Controller
      */
     public function claim(Request $request, FoodItem $foodItem)
     {
+        // Daily claim limit logic
+        $recipientId = Auth::id();
+        $todayClaims = FoodItem::where('claimed_by_recipient_id', $recipientId)
+                               ->whereDate('updated_at', Carbon::today())->count();
+        
+        if ($todayClaims >= 2) {
+            return redirect()->back()->with('error', 'You have reached your daily claim limit of 2 items.');
+        }
+
         if ($foodItem->status !== 'available') {
             return redirect()->back()->with('error', 'This item is no longer available or already claimed.');
         }
         if ($foodItem->pickup_end_time < now()) {
-            // Optionally mark as expired
-            // $foodItem->update(['status' => 'expired']);
             return redirect()->back()->with('error', 'This food item listing has expired and cannot be claimed.');
         }
 
         $foodItem->status = 'claimed';
-        $foodItem->claimed_by_recipient_id = Auth::id();
+        $foodItem->claimed_by_recipient_id = $recipientId;
         $foodItem->save();
 
         // TODO: Add notification to vendor (e.g., email, in-app notification)
